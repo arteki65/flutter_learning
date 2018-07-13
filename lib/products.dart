@@ -45,6 +45,20 @@ class Products extends StatelessWidget {
               ],
             ),
           ),
+          Container(
+            padding: EdgeInsets.symmetric(
+              horizontal: 4.0,
+              vertical: 2.5,
+            ),
+            decoration: BoxDecoration(
+              border: Border.all(
+                color: Colors.grey,
+                width: 1.0,
+              ),
+              borderRadius: BorderRadius.circular(6.0),
+            ),
+            child: Text('Mława'),
+          ),
           ButtonBar(
             alignment: MainAxisAlignment.center,
             children: <Widget>[
