@@ -11,6 +11,7 @@ class _AuthPageState extends State<AuthPage> {
   String _email;
   String _password;
   bool _acceptTerms = false;
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   DecorationImage _buildBackgroundImage() {
     return DecorationImage(
@@ -24,23 +25,28 @@ class _AuthPageState extends State<AuthPage> {
   }
 
   Widget _buildEmailTextField() {
-    return TextField(
+    return TextFormField(
       decoration: InputDecoration(
         labelText: 'Email',
         filled: true,
         fillColor: Colors.white,
       ),
       keyboardType: TextInputType.emailAddress,
-      onChanged: (String value) {
-        setState(() {
-          _email = value;
-        });
+      onSaved: (String value) {
+        _email = value;
+      },
+      validator: (String value) {
+        if (value.isEmpty ||
+            !RegExp(r"[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?")
+                .hasMatch(value)) {
+          return 'Correct email address required!';
+        }
       },
     );
   }
 
   Widget _buildPasswordTextField() {
-    return TextField(
+    return TextFormField(
       decoration: InputDecoration(
         labelText: 'Password',
         filled: true,
@@ -48,10 +54,13 @@ class _AuthPageState extends State<AuthPage> {
       ),
       keyboardType: TextInputType.text,
       obscureText: true,
-      onChanged: (String value) {
-        setState(() {
-          _password = value;
-        });
+      onSaved: (String value) {
+        _password = value;
+      },
+      validator: (String value) {
+        if (value.isEmpty || value.length < 6) {
+          return 'Password should have at least 6 characters!';
+        }
       },
     );
   }
@@ -61,14 +70,17 @@ class _AuthPageState extends State<AuthPage> {
       title: Text('Accept Terms'),
       value: _acceptTerms,
       onChanged: (bool value) {
-        setState(() {
-          _acceptTerms = value;
-        });
+        _acceptTerms = value;
       },
     );
   }
 
   void _submitForm() {
+    if (!_formKey.currentState.validate()) {
+      return;
+    }
+
+    _formKey.currentState.save();
     print('Email: $_email; Password: $_password');
     Navigator.pushReplacementNamed(context, '/products');
   }
@@ -77,6 +89,7 @@ class _AuthPageState extends State<AuthPage> {
   Widget build(BuildContext context) {
     final double deviceWidth = MediaQuery.of(context).size.width;
     final double targetWidth = deviceWidth > 550.0 ? 500.0 : deviceWidth * 0.95;
+
     return Scaffold(
       appBar: AppBar(
         title: Text('Login'),
@@ -90,23 +103,26 @@ class _AuthPageState extends State<AuthPage> {
           child: SingleChildScrollView(
             child: Container(
               width: targetWidth,
-              child: Column(
-                children: <Widget>[
-                  _buildEmailTextField(),
-                  SizedBox(
-                    height: 10.0,
-                  ),
-                  _buildPasswordTextField(),
-                  _buildAcceptSwitch(),
-                  SizedBox(
-                    height: 10.0,
-                  ),
-                  RaisedButton(
-                    child: Text('LOGIN'),
-                    textColor: Colors.white,
-                    onPressed: _submitForm,
-                  ),
-                ],
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  children: <Widget>[
+                    _buildEmailTextField(),
+                    SizedBox(
+                      height: 10.0,
+                    ),
+                    _buildPasswordTextField(),
+                    _buildAcceptSwitch(),
+                    SizedBox(
+                      height: 10.0,
+                    ),
+                    RaisedButton(
+                      child: Text('LOGIN'),
+                      textColor: Colors.white,
+                      onPressed: _submitForm,
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
