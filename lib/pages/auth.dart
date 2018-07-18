@@ -103,7 +103,6 @@ class _AuthPageState extends State<AuthPage> {
                   ),
                   RaisedButton(
                     child: Text('LOGIN'),
-                    color: Theme.of(context).primaryColor,
                     textColor: Colors.white,
                     onPressed: _submitForm,
                   ),
