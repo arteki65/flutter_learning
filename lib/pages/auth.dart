@@ -8,9 +8,11 @@ class AuthPage extends StatefulWidget {
 }
 
 class _AuthPageState extends State<AuthPage> {
-  String _email;
-  String _password;
-  bool _acceptTerms = false;
+  final Map<String, dynamic> _formData = {
+    'email': null,
+    'password': null,
+    'acceptTerms': false
+  };
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   DecorationImage _buildBackgroundImage() {
@@ -33,7 +35,7 @@ class _AuthPageState extends State<AuthPage> {
       ),
       keyboardType: TextInputType.emailAddress,
       onSaved: (String value) {
-        _email = value;
+        _formData['email'] = value;
       },
       validator: (String value) {
         if (value.isEmpty ||
@@ -55,7 +57,7 @@ class _AuthPageState extends State<AuthPage> {
       keyboardType: TextInputType.text,
       obscureText: true,
       onSaved: (String value) {
-        _password = value;
+        _formData['password'] = value;
       },
       validator: (String value) {
         if (value.isEmpty || value.length < 6) {
@@ -68,20 +70,22 @@ class _AuthPageState extends State<AuthPage> {
   Widget _buildAcceptSwitch() {
     return SwitchListTile(
       title: Text('Accept Terms'),
-      value: _acceptTerms,
+      value: _formData['acceptTerms'],
       onChanged: (bool value) {
-        _acceptTerms = value;
+        setState(() {
+          _formData['acceptTerms'] = value;
+        });
       },
     );
   }
 
   void _submitForm() {
-    if (!_formKey.currentState.validate()) {
+    if (!_formKey.currentState.validate() || !_formData['acceptTerms']) {
       return;
     }
 
     _formKey.currentState.save();
-    print('Email: $_email; Password: $_password');
+    print(_formData);
     Navigator.pushReplacementNamed(context, '/products');
   }
 
