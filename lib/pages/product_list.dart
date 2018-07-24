@@ -2,12 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_course/pages/product_edit_page.dart';
 
 class ProductListPage extends StatelessWidget {
-  final Function updateProduct;
-  final Function deleteProduct;
-  final List<Map<String, dynamic>> products;
-
-  ProductListPage(this.products, this.updateProduct, this.deleteProduct);
-
+  
   Widget _buildEditButton(BuildContext context, int index) {
     return IconButton(
                   icon: Icon(Icons.edit),

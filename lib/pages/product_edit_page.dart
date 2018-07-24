@@ -1,14 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_course/models/product.dart';
+import 'package:flutter_course/scoped-models/products_model.dart';
 import 'package:flutter_course/widgets/helpers/ensure-visible.dart';
+import 'package:scoped_model/scoped_model.dart';
 
 class ProductEditPage extends StatefulWidget {
-  final Function addProduct;
-  final Function updateProduct;
-  final Map<String, dynamic> product;
-  final int productIndex;
-
-  ProductEditPage(
-      {this.addProduct, this.product, this.updateProduct, this.productIndex});
 
   @override
   State<StatefulWidget> createState() {
@@ -96,6 +92,20 @@ class _ProductEditPageState extends State<ProductEditPage> {
     );
   }
 
+  Widget _buildSubmitButton() {
+    return ScopedModelDescendant<ProductsModel>(
+      builder:
+          (BuildContext context, Widget widget, ProductsModel model) {
+        return RaisedButton(
+          child: Text('Save'),
+          color: Theme.of(context).accentColor,
+          textColor: Colors.white,
+          onPressed: () => _submitForm(model),
+        );
+      },
+    );
+  }
+
   Widget _buildPageContent(BuildContext context) {
     final double deviceWidth = MediaQuery.of(context).size.width;
     final double targetWidth = deviceWidth > 550.0 ? 500.0 : deviceWidth * 0.95;
@@ -118,12 +128,7 @@ class _ProductEditPageState extends State<ProductEditPage> {
               SizedBox(
                 height: 10.0,
               ),
-              RaisedButton(
-                child: Text('Save'),
-                color: Theme.of(context).accentColor,
-                textColor: Colors.white,
-                onPressed: _submitForm,
-              ),
+              _buildSubmitButton(),
             ],
           ),
         ),
@@ -131,16 +136,16 @@ class _ProductEditPageState extends State<ProductEditPage> {
     );
   }
 
-  void _submitForm() {
+  void _submitForm(ProductsModel model) {
     _formKey.currentState.save();
     if (!_formKey.currentState.validate()) {
       return;
     }
 
     if (widget.product == null) {
-      widget.addProduct(_formData);
+      model.addProduct(Product());
     } else {
-      widget.updateProduct(widget.productIndex, widget.product);
+      model.updateProduct(widget.productIndex, widget.product);
     }
 
     Navigator.pushReplacementNamed(context, '/products');
