@@ -141,7 +141,11 @@ class _ProductEditPageState extends State<ProductEditPage> {
           price: _formData['price'],
           imagePath: _formData['image']));
     } else {
-      model.updateProduct(model.selectedProduct);
+      model.updateProduct(Product(
+          title: _formData['title'],
+          description: _formData['description'],
+          price: _formData['price'],
+          imagePath: _formData['image']));
     }
 
     Navigator.pushReplacementNamed(context, '/products');

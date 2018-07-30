@@ -5,7 +5,8 @@ import 'package:flutter_course/scoped-models/products_model.dart';
 import 'package:flutter_course/pages/product_edit_page.dart';
 
 class ProductListPage extends StatelessWidget {
-  Widget _buildEditButton(BuildContext context, int index, ProductsModel model) {
+  Widget _buildEditButton(
+      BuildContext context, int index, ProductsModel model) {
     return IconButton(
       icon: Icon(Icons.edit),
       onPressed: () {
