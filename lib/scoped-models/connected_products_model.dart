@@ -1,6 +1,9 @@
+import 'dart:convert';
+
 import 'package:flutter_course/models/product.dart';
 import 'package:flutter_course/models/user.dart';
 import 'package:scoped_model/scoped_model.dart';
+import 'package:http/http.dart' as http;
 
 class ConnectedProductsModel extends Model {
   List<Product> _products = [];
@@ -9,6 +12,17 @@ class ConnectedProductsModel extends Model {
 
   void addProduct(
       String title, String description, String image, double price) {
+    final Map<String, dynamic> productData = {
+      'title': title,
+      'description': description,
+      'image':
+          'https://www.ketoconnect.net/wp-content/uploads/2018/01/keto-chocolate-bar-broke.jpg',
+      'price': price
+    };
+    http.post(
+      'https://flutter-products-2d429.firebaseio.com/products.json',
+      body: json.encode(productData),
+    );
     final newProduct = Product(
       description: description,
       imagePath: image,
@@ -73,7 +87,8 @@ class ProductsModel extends ConnectedProductsModel {
   }
 
   void toggleProductFavorite() {
-    final bool isCurrentlyFavourite = _products[selectedProductIndex].isFavorite;
+    final bool isCurrentlyFavourite =
+        _products[selectedProductIndex].isFavorite;
     final bool newFavouriteStatus = !isCurrentlyFavourite;
     final Product updatedProduct = Product(
       title: selectedProduct.title,
@@ -103,7 +118,6 @@ class ProductsModel extends ConnectedProductsModel {
 }
 
 class UserModel extends ConnectedProductsModel {
-
   void login(String email, String password) {
     _authenticatedUser = User(
       id: 'dummyId',
