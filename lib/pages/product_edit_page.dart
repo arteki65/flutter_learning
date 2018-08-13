@@ -150,7 +150,9 @@ class _ProductEditPageState extends State<ProductEditPage> {
       );
     }
 
-    Navigator.pushReplacementNamed(context, '/products');
+    Navigator
+        .pushReplacementNamed(context, '/products')
+        .then((_) => model.selectProduct(null));
   }
 
   @override
