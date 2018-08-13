@@ -70,7 +70,9 @@ class ProductsModel extends ConnectedProducts {
 
   void selectProduct(int index) {
     selProductIndex = index;
-    notifyListeners();
+    if (index != null) {
+      notifyListeners();
+    }
   }
 
   void toggleDisplayMode() {

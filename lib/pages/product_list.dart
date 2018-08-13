@@ -5,8 +5,7 @@ import 'package:flutter_course/scoped-models/main_model.dart';
 import 'package:flutter_course/pages/product_edit_page.dart';
 
 class ProductListPage extends StatelessWidget {
-  Widget _buildEditButton(
-      BuildContext context, int index, MainModel model) {
+  Widget _buildEditButton(BuildContext context, int index, MainModel model) {
     return IconButton(
       icon: Icon(Icons.edit),
       onPressed: () {
@@ -15,7 +14,9 @@ class ProductListPage extends StatelessWidget {
           builder: (BuildContext context) {
             return ProductEditPage();
           },
-        ));
+        )).then((_) {
+          model.selectProduct(null);
+        });
       },
     );
   }
