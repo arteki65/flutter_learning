@@ -135,17 +135,19 @@ class _ProductEditPageState extends State<ProductEditPage> {
     }
 
     if (model.selectedProduct == null) {
-      model.addProduct(Product(
-          title: _formData['title'],
-          description: _formData['description'],
-          price: _formData['price'],
-          imagePath: _formData['image']));
+      model.addProduct(
+        _formData['title'],
+        _formData['description'],
+        _formData['image'],
+        _formData['price'],
+      );
     } else {
-      model.updateProduct(Product(
-          title: _formData['title'],
-          description: _formData['description'],
-          price: _formData['price'],
-          imagePath: _formData['image']));
+      model.updateProduct(
+        _formData['title'],
+        _formData['description'],
+        _formData['image'],
+        _formData['price'],
+      );
     }
 
     Navigator.pushReplacementNamed(context, '/products');
