@@ -17,23 +17,30 @@ class ConnectedProductsModel extends Model {
       'description': description,
       'image':
           'https://www.ketoconnect.net/wp-content/uploads/2018/01/keto-chocolate-bar-broke.jpg',
-      'price': price
+      'price': price,
+      'userEmail': _authenticatedUser.email,
+      'userId': _authenticatedUser.id
     };
-    http.post(
+    http
+        .post(
       'https://flutter-products-2d429.firebaseio.com/products.json',
       body: json.encode(productData),
-    );
-    final newProduct = Product(
-      description: description,
-      imagePath: image,
-      title: title,
-      price: price,
-      userEmail: _authenticatedUser.email,
-      userId: _authenticatedUser.id,
-    );
-    _products.add(newProduct);
-    _selProductIndex = null;
-    notifyListeners();
+    )
+        .then((http.Response response) {
+      final Map<String, dynamic> responseData = json.decode(response.body);
+      final newProduct = Product(
+        id: responseData['name'],
+        description: description,
+        imagePath: image,
+        title: title,
+        price: price,
+        userEmail: _authenticatedUser.email,
+        userId: _authenticatedUser.id,
+      );
+      _products.add(newProduct);
+      _selProductIndex = null;
+      notifyListeners();
+    });
   }
 }
 
@@ -84,6 +91,29 @@ class ProductsModel extends ConnectedProductsModel {
     _products.removeAt(selectedProductIndex);
     _selProductIndex = null;
     notifyListeners();
+  }
+
+  void fetchProducts() {
+    http
+        .get(
+            'https://flutter-products-2d429.firebaseio.com/products.json')
+        .then((http.Response response) {
+      final List<Product> fetchedProductList = [];
+      final Map<String, dynamic> productListData = json.decode(response.body);
+      productListData.forEach((String porudctId, dynamic productData) {
+        final Product product = Product(
+            id: porudctId,
+            description: productData['description'],
+            imagePath: productData['image'],
+            title: productData['title'],
+            price: productData['price'],
+            userEmail: productData['userEmail'],
+            userId: productData['userId']);
+        fetchedProductList.add(product);
+      });
+      _products = fetchedProductList;
+      notifyListeners();
+    });
   }
 
   void toggleProductFavorite() {

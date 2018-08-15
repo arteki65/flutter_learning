@@ -55,7 +55,7 @@ class ProductPage extends StatelessWidget {
             body: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
-                Image.asset(model.allProducts[index].imagePath),
+                Image.network(model.allProducts[index].imagePath),
                 Container(
                   child: TitleDefault(model.allProducts[index].title),
                   padding: EdgeInsets.all(10.0),
