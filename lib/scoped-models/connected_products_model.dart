@@ -6,6 +6,11 @@ import 'package:flutter_course/models/user.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:http/http.dart' as http;
 
+final String _productsApiUrl =
+    'https://flutter-products-2d429.firebaseio.com/products.json';
+final String _productApiUrl =
+    'https://flutter-products-2d429.firebaseio.com/products/';
+
 class ConnectedProductsModel extends Model {
   List<Product> _products = [];
   User _authenticatedUser;
@@ -78,18 +83,37 @@ class ProductsModel extends ConnectedProductsModel {
     return _showFavorites;
   }
 
-  void updateProduct(
+  Future<Null> updateProduct(
       String title, String description, String image, double price) {
-    final updatedProduct = Product(
-      description: description,
-      imagePath: image,
-      title: title,
-      price: price,
-      userEmail: selectedProduct.userEmail,
-      userId: selectedProduct.userId,
-    );
-    _products[selectedProductIndex] = updatedProduct;
+    _isLoading = true;
     notifyListeners();
+    final Map<String, dynamic> updateData = {
+      'title': title,
+      'description': description,
+      'image': image,
+      'price': price,
+      'userEmail': selectedProduct.userEmail,
+      'userId': selectedProduct.userId,
+    };
+    return http
+        .put(
+      _productApiUrl + '${selectedProduct.id}.json',
+      body: json.encode(updateData),
+    )
+        .then((http.Response response) {
+      _isLoading = false;
+      final updatedProduct = Product(
+        id: selectedProduct.id,
+        description: description,
+        imagePath: image,
+        title: title,
+        price: price,
+        userEmail: selectedProduct.userEmail,
+        userId: selectedProduct.userId,
+      );
+      _products[selectedProductIndex] = updatedProduct;
+      notifyListeners();
+    });
   }
 
   void deleteProduct() {

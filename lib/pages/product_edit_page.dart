@@ -150,12 +150,16 @@ class _ProductEditPageState extends State<ProductEditPage> {
               .pushReplacementNamed(context, '/products')
               .then((_) => model.selectProduct(null)));
     } else {
-      model.updateProduct(
-        _formData['title'],
-        _formData['description'],
-        _formData['image'],
-        _formData['price'],
-      );
+      model
+          .updateProduct(
+            _formData['title'],
+            _formData['description'],
+            _formData['image'],
+            _formData['price'],
+          )
+          .then((_) => Navigator
+              .pushReplacementNamed(context, '/products')
+              .then((_) => model.selectProduct(null)));
     }
   }
 
