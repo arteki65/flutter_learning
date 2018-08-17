@@ -141,14 +141,32 @@ class _ProductEditPageState extends State<ProductEditPage> {
     if (model.selectedProductIndex == -1) {
       model
           .addProduct(
-            _formData['title'],
-            _formData['description'],
-            _formData['image'],
-            _formData['price'],
-          )
-          .then((_) => Navigator
+        _formData['title'],
+        _formData['description'],
+        _formData['image'],
+        _formData['price'],
+      )
+          .then((bool success) {
+        if (success) {
+          Navigator
               .pushReplacementNamed(context, '/products')
-              .then((_) => model.selectProduct(null)));
+              .then((_) => model.selectProduct(null));
+        } else {
+          showDialog(
+            context: context,
+            builder: (BuildContext context) => AlertDialog(
+                  title: Text('Something went wrong'),
+                  content: Text('Please try again later.'),
+                  actions: <Widget>[
+                    FlatButton(
+                      onPressed: () => Navigator.of(context).pop(),
+                      child: Text('Okay'),
+                    ),
+                  ],
+                ),
+          );
+        }
+      });
     } else {
       model
           .updateProduct(
