@@ -65,7 +65,7 @@ class ProductCard extends StatelessWidget {
             image: NetworkImage(product.imagePath),
             height: 300.0,
             fit: BoxFit.cover,
-            placeholder: AssetImage('assets/food/jpg'),
+            placeholder: AssetImage('assets/food.jpg'),
           ),
           _buildTitlePriceRow(),
           AddressTag('Mława'),

@@ -123,7 +123,7 @@ class ProductsModel extends ConnectedProductsModel {
     _selProductIndex = null;
     notifyListeners();
     http
-        .delete(_productApiUrl + '${selectedProduct.id}.json')
+        .delete(_productApiUrl + '$deletedProductId.json')
         .then((http.Response response) {
       _isLoading = false;
       notifyListeners();
