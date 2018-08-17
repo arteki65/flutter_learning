@@ -8,9 +8,8 @@ import 'package:flutter_course/scoped-models/main_model.dart';
 
 class ProductCard extends StatelessWidget {
   final Product product;
-  final int productIndex;
 
-  ProductCard(this.product, this.productIndex);
+  ProductCard(this.product);
 
   Widget _buildTitlePriceRow() {
     return Container(
@@ -35,18 +34,17 @@ class ProductCard extends StatelessWidget {
         IconButton(
           icon: Icon(Icons.info),
           color: Theme.of(context).accentColor,
-          onPressed: () => Navigator.pushNamed<bool>(
-              context, '/product/' + productIndex.toString()),
+          onPressed: () =>
+              Navigator.pushNamed<bool>(context, '/product/' + product.id),
         ),
         ScopedModelDescendant<MainModel>(
           builder: (BuildContext context, Widget child, MainModel model) {
             return IconButton(
-              icon: Icon(model.allProducts[productIndex].isFavorite
-                  ? Icons.favorite
-                  : Icons.favorite_border),
+              icon: Icon(
+                  product.isFavorite ? Icons.favorite : Icons.favorite_border),
               color: Colors.red,
               onPressed: () {
-                model.selectProduct(productIndex);
+                model.selectProduct(product.id);
                 model.toggleProductFavorite();
               },
             );

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter_course/models/product.dart';
 import 'package:flutter_course/scoped-models/main_model.dart';
 import 'package:scoped_model/scoped_model.dart';
 
@@ -46,9 +47,11 @@ class _MyAppState extends State<MyApp> {
             return null;
           }
           if (pathElements[1] == 'product') {
-            final int index = int.parse(pathElements[2]);
+            final String productId = pathElements[2];
+            final Product product = mainModel.allProducts
+                .firstWhere((Product p) => p.id == productId);
             return MaterialPageRoute<bool>(
-              builder: (BuildContext context) => ProductPage(index),
+              builder: (BuildContext context) => ProductPage(product),
             );
           }
           return null;

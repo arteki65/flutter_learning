@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:flutter_course/models/product.dart';
 import 'package:flutter_course/scoped-models/main_model.dart';
 import 'package:scoped_model/scoped_model.dart';
 
@@ -6,9 +7,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_course/widgets/ui_elements/title_default.dart';
 
 class ProductPage extends StatelessWidget {
-  final int index;
+  final Product product;
 
-  ProductPage(this.index);
+  ProductPage(this.product);
 
   Widget _buildAddressPriceRow(double price) {
     return Row(
@@ -46,32 +47,33 @@ class ProductPage extends StatelessWidget {
         Navigator.pop(context, false);
         return Future.value(false);
       },
-      child: ScopedModelDescendant<MainModel>(
-        builder: (BuildContext context, Widget child, MainModel model) {
-          return Scaffold(
-            appBar: AppBar(
-              title: Text(model.allProducts[index].title),
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(product.title),
+        ),
+        body: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: <Widget>[
+            FadeInImage(
+              image: NetworkImage(product.imagePath),
+              placeholder: AssetImage('assets/food.jpg'),
+              height: 300.0,
+              fit: BoxFit.cover,
             ),
-            body: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: <Widget>[
-                Image.network(model.allProducts[index].imagePath),
-                Container(
-                  child: TitleDefault(model.allProducts[index].title),
-                  padding: EdgeInsets.all(10.0),
-                ),
-                _buildAddressPriceRow(model.allProducts[index].price),
-                Container(
-                  padding: EdgeInsets.all(10.0),
-                  child: Text(
-                    model.allProducts[index].description,
-                    textAlign: TextAlign.center,
-                  ),
-                ),
-              ],
+            Container(
+              child: TitleDefault(product.title),
+              padding: EdgeInsets.all(10.0),
             ),
-          );
-        },
+            _buildAddressPriceRow(product.price),
+            Container(
+              padding: EdgeInsets.all(10.0),
+              child: Text(
+                product.description,
+                textAlign: TextAlign.center,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

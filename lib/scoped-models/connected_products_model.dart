@@ -14,7 +14,7 @@ final String _productApiUrl =
 class ConnectedProductsModel extends Model {
   List<Product> _products = [];
   User _authenticatedUser;
-  int _selProductIndex;
+  String _selProductId;
   bool _isLoading = false;
 
   Future<Null> addProduct(
@@ -47,7 +47,7 @@ class ConnectedProductsModel extends Model {
         userId: _authenticatedUser.id,
       );
       _products.add(newProduct);
-      _selProductIndex = null;
+      _selProductId = null;
       _isLoading = false;
       notifyListeners();
     });
@@ -69,14 +69,18 @@ class ProductsModel extends ConnectedProductsModel {
   }
 
   int get selectedProductIndex {
-    return _selProductIndex;
+    return _products.indexWhere((Product p) => p.id == _selProductId);
+  }
+
+  String get selectedProductId {
+    return _selProductId;
   }
 
   Product get selectedProduct {
-    if (selectedProductIndex == null) {
+    if (selectedProductId == null) {
       return null;
     }
-    return _products[selectedProductIndex];
+    return _products.firstWhere((Product p) => p.id == _selProductId);
   }
 
   bool get displayFavoritesOnly {
@@ -120,7 +124,7 @@ class ProductsModel extends ConnectedProductsModel {
     _isLoading = false;
     final deletedProductId = selectedProduct.id;
     _products.removeAt(selectedProductIndex);
-    _selProductIndex = null;
+    _selProductId = null;
     notifyListeners();
     http
         .delete(_productApiUrl + '$deletedProductId.json')
@@ -157,14 +161,15 @@ class ProductsModel extends ConnectedProductsModel {
       _products = fetchedProductList;
       _isLoading = false;
       notifyListeners();
+      _selProductId = null;
     });
   }
 
   void toggleProductFavorite() {
-    final bool isCurrentlyFavourite =
-        _products[selectedProductIndex].isFavorite;
+    final bool isCurrentlyFavourite = selectedProduct.isFavorite;
     final bool newFavouriteStatus = !isCurrentlyFavourite;
     final Product updatedProduct = Product(
+      id: selectedProduct.id,
       title: selectedProduct.title,
       description: selectedProduct.description,
       imagePath: selectedProduct.imagePath,
@@ -174,13 +179,13 @@ class ProductsModel extends ConnectedProductsModel {
       userId: selectedProduct.userId,
     );
     _products[selectedProductIndex] = updatedProduct;
-    _selProductIndex = null;
+    _selProductId = null;
     notifyListeners();
   }
 
-  void selectProduct(int index) {
-    _selProductIndex = index;
-    if (index != null) {
+  void selectProduct(String productId) {
+    _selProductId = productId;
+    if (productId != null) {
       notifyListeners();
     }
   }

@@ -138,7 +138,7 @@ class _ProductEditPageState extends State<ProductEditPage> {
       return;
     }
 
-    if (model.selectedProduct == null) {
+    if (model.selectedProductIndex == -1) {
       model
           .addProduct(
             _formData['title'],
@@ -168,7 +168,7 @@ class _ProductEditPageState extends State<ProductEditPage> {
     return ScopedModelDescendant<MainModel>(
       builder: (BuildContext context, Widget widget, MainModel model) {
         final Widget pageContent = _buildPageContent(context, model);
-        return model.selectedProductIndex == null
+        return model.selectedProductIndex == -1
             ? pageContent
             : Scaffold(
                 appBar: AppBar(
