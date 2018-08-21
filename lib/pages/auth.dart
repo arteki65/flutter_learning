@@ -111,11 +111,9 @@ class _AuthPageState extends State<AuthPage> {
     _formKey.currentState.save();
     Map<String, dynamic> successInfo;
     if (_authMode == AuthMode.Login) {
-      final Map<String, dynamic> successInfo =
-          await login(_formData['email'], _formData['password']);
+      successInfo = await login(_formData['email'], _formData['password']);
     } else {
-      final Map<String, dynamic> successInfo =
-          await signup(_formData['email'], _formData['password']);
+      successInfo = await signup(_formData['email'], _formData['password']);
     }
     if (successInfo['success']) {
       Navigator.pushReplacementNamed(context, '/products');

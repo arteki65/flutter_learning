@@ -234,7 +234,7 @@ class UserModel extends ConnectedProductsModel {
       'returnSecureToken': true
     };
     final http.Response response = await http.post(
-      _signupApiUrl,
+      _signinApiUrl,
       body: json.encode(authData),
       headers: {
         'Content-Type': 'application/json',
