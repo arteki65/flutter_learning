@@ -244,7 +244,19 @@ class UserModel extends ConnectedProductsModel {
         'Content-Type': 'application/json',
       },
     );
-    return {};
+    final Map<String, dynamic> responseData = json.decode(response.body);
+    bool hasError = true;
+    String message = 'Something went wrong!';
+    if (responseData.containsKey('idToken')) {
+      hasError = false;
+      message = 'Authentication succeeded!';
+    } else if (responseData['error']['message'] == 'EMAIL_EXISTS') {
+      message = 'Provided email already has been registered.';
+    }
+    return {
+      'success': !hasError,
+      'message': message,
+    };
   }
 }
 
