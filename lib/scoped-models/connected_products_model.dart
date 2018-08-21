@@ -10,7 +10,9 @@ final String _productsApiUrl =
     'https://flutter-products-2d429.firebaseio.com/products.json';
 final String _productApiUrl =
     'https://flutter-products-2d429.firebaseio.com/products/';
-final String _authApiUrl =
+final String _signupApiUrl =
+    'https://www.googleapis.com/identitytoolkit/v3/relyingparty/signupNewUser?key=AIzaSyC68wUNJbBXj9b7m0thUmzRpJQJrniJ0MM';
+final String _signinApiUrl =
     'https://www.googleapis.com/identitytoolkit/v3/relyingparty/verifyPassword?key=AIzaSyC68wUNJbBXj9b7m0thUmzRpJQJrniJ0MM';
 
 class ConnectedProductsModel extends Model {
@@ -223,12 +225,38 @@ class ProductsModel extends ConnectedProductsModel {
 }
 
 class UserModel extends ConnectedProductsModel {
-  void login(String email, String password) {
-    _authenticatedUser = User(
-      id: 'dummyId',
-      email: email,
-      password: password,
+  Future<Map<String, dynamic>> login(String email, String password) async {
+    _isLoading = true;
+    notifyListeners();
+    final Map<String, dynamic> authData = {
+      'email': email,
+      'password': password,
+      'returnSecureToken': true
+    };
+    final http.Response response = await http.post(
+      _signupApiUrl,
+      body: json.encode(authData),
+      headers: {
+        'Content-Type': 'application/json',
+      },
     );
+    final Map<String, dynamic> responseData = json.decode(response.body);
+    bool hasError = true;
+    String message = 'Something went wrong!';
+    if (responseData.containsKey('idToken')) {
+      hasError = false;
+      message = 'Authentication succeeded!';
+    } else if (responseData['error']['message'] == 'EMAIL_NOT_FOUND') {
+      message = 'This email was not found';
+    } else if (responseData['error']['message'] == 'INVALID_PASSWORD') {
+      message = 'Invalid password.';
+    }
+    _isLoading = false;
+    notifyListeners();
+    return {
+      'success': !hasError,
+      'message': message,
+    };
   }
 
   Future<Map<String, dynamic>> signup(String email, String password) async {
@@ -240,7 +268,7 @@ class UserModel extends ConnectedProductsModel {
       'returnSecureToken': true
     };
     final http.Response response = await http.post(
-      _authApiUrl,
+      _signupApiUrl,
       body: jsonEncode(authData),
       headers: {
         'Content-Type': 'application/json',
