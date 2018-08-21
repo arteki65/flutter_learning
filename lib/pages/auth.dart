@@ -195,12 +195,16 @@ class _AuthPageState extends State<AuthPage> {
                         Widget child,
                         MainModel model,
                       ) {
-                        return RaisedButton(
-                          child: Text('LOGIN'),
-                          textColor: Colors.white,
-                          onPressed: () =>
-                              _submitForm(model.login, model.signup),
-                        );
+                        return model.isLoading
+                            ? CircularProgressIndicator()
+                            : RaisedButton(
+                                child: Text(_authMode == AuthMode.Login
+                                    ? 'LOGIN'
+                                    : 'SIGNUP'),
+                                textColor: Colors.white,
+                                onPressed: () =>
+                                    _submitForm(model.login, model.signup),
+                              );
                       },
                     )
                   ],

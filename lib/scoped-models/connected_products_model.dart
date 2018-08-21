@@ -232,6 +232,8 @@ class UserModel extends ConnectedProductsModel {
   }
 
   Future<Map<String, dynamic>> signup(String email, String password) async {
+    _isLoading = true;
+    notifyListeners();
     final Map<String, dynamic> authData = {
       'email': email,
       'password': password,
@@ -253,6 +255,8 @@ class UserModel extends ConnectedProductsModel {
     } else if (responseData['error']['message'] == 'EMAIL_EXISTS') {
       message = 'Provided email already has been registered.';
     }
+    _isLoading = false;
+    notifyListeners();
     return {
       'success': !hasError,
       'message': message,
