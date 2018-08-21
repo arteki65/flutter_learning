@@ -10,6 +10,8 @@ final String _productsApiUrl =
     'https://flutter-products-2d429.firebaseio.com/products.json';
 final String _productApiUrl =
     'https://flutter-products-2d429.firebaseio.com/products/';
+final String _authApiUrl =
+    'https://www.googleapis.com/identitytoolkit/v3/relyingparty/verifyPassword?key=AIzaSyC68wUNJbBXj9b7m0thUmzRpJQJrniJ0MM';
 
 class ConnectedProductsModel extends Model {
   List<Product> _products = [];
@@ -227,6 +229,22 @@ class UserModel extends ConnectedProductsModel {
       email: email,
       password: password,
     );
+  }
+
+  Future<Map<String, dynamic>> signup(String email, String password) async {
+    final Map<String, dynamic> authData = {
+      'email': email,
+      'password': password,
+      'returnSecureToken': true
+    };
+    final http.Response response = await http.post(
+      _authApiUrl,
+      body: jsonEncode(authData),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    );
+    return {};
   }
 }
 

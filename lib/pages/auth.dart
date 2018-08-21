@@ -62,9 +62,6 @@ class _AuthPageState extends State<AuthPage> {
       ),
       keyboardType: TextInputType.text,
       obscureText: true,
-      onSaved: (String value) {
-        _formData['email'] = value;
-      },
       validator: (String value) {
         if (_passwordTextController.text != value) {
           return 'Passwords do not match!';
@@ -106,14 +103,21 @@ class _AuthPageState extends State<AuthPage> {
     );
   }
 
-  void _submitForm(Function login) {
+  void _submitForm(Function login, Function signup) async {
     if (!_formKey.currentState.validate() || !_formData['acceptTerms']) {
       return;
     }
 
     _formKey.currentState.save();
-    login(_formData['email'], _formData['password']);
-    Navigator.pushReplacementNamed(context, '/products');
+    if (_authMode == AuthMode.Login) {
+      login(_formData['email'], _formData['password']);
+    } else {
+      final Map<String, dynamic> successInfo =
+          await signup(_formData['email'], _formData['password']);
+      if (successInfo['success']) {
+        Navigator.pushReplacementNamed(context, '/products');
+      }
+    }
   }
 
   @override
@@ -176,7 +180,8 @@ class _AuthPageState extends State<AuthPage> {
                         return RaisedButton(
                           child: Text('LOGIN'),
                           textColor: Colors.white,
-                          onPressed: () => _submitForm(model.login),
+                          onPressed: () =>
+                              _submitForm(model.login, model.signup),
                         );
                       },
                     )
