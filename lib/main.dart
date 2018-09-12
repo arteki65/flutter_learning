@@ -25,10 +25,16 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   final MainModel _mainModel = MainModel();
+  bool _isAuthenticated = false;
 
   @override
   void initState() {
     _mainModel.autoAuth();
+    _mainModel.userSubject.listen((bool isAuthenticated) {
+      setState(() {
+        _isAuthenticated = isAuthenticated;
+      });
+    });
     super.initState();
   }
 
@@ -44,11 +50,16 @@ class _MyAppState extends State<MyApp> {
         ),
         routes: {
           '/': (BuildContext contexy) =>
-              _mainModel.user == null ? AuthPage() : ProductsPage(_mainModel),
-          '/products': (BuildContext context) => ProductsPage(_mainModel),
-          '/admin': (BuildContext context) => ProductsAdminPage(_mainModel),
+              !_isAuthenticated ? AuthPage() : ProductsPage(_mainModel),
+          '/admin': (BuildContext context) =>
+              !_isAuthenticated ? AuthPage() : ProductsAdminPage(_mainModel),
         },
         onGenerateRoute: (RouteSettings settings) {
+          if (!_isAuthenticated) {
+            return MaterialPageRoute<bool>(
+              builder: (BuildContext context) => AuthPage(),
+            );
+          }
           final List<String> pathElements = settings.name.split('/');
           if (pathElements[0] != '') {
             return null;
@@ -58,14 +69,16 @@ class _MyAppState extends State<MyApp> {
             final Product product = _mainModel.allProducts
                 .firstWhere((Product p) => p.id == productId);
             return MaterialPageRoute<bool>(
-              builder: (BuildContext context) => ProductPage(product),
+              builder: (BuildContext context) =>
+                  !_isAuthenticated ? AuthPage() : ProductPage(product),
             );
           }
           return null;
         },
         onUnknownRoute: (RouteSettings settings) {
           return new MaterialPageRoute(
-            builder: (BuildContext context) => ProductsPage(_mainModel),
+            builder: (BuildContext context) =>
+                !_isAuthenticated ? AuthPage() : ProductsPage(_mainModel),
           );
         },
       ),

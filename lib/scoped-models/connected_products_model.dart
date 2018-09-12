@@ -7,6 +7,7 @@ import 'package:flutter_course/models/user.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:rxdart/subjects.dart';
 
 final String _productsApiUrl =
     'https://flutter-products-2d429.firebaseio.com/products.json';
@@ -231,9 +232,14 @@ class ProductsModel extends ConnectedProductsModel {
 
 class UserModel extends ConnectedProductsModel {
   Timer _authTimer;
+  PublishSubject<bool> _userSubject = PublishSubject();
 
   User get user {
     return _authenticatedUser;
+  }
+
+  PublishSubject<bool> get userSubject {
+    return _userSubject;
   }
 
   Future<Map<String, dynamic>> authenticate(String email, String password,
@@ -276,6 +282,7 @@ class UserModel extends ConnectedProductsModel {
         token: responseData['idToken'],
       );
       setAuthTimeout(int.parse(responseData['expiresIn']));
+      _userSubject.add(true);
       final DateTime now = DateTime.now();
       final DateTime expiryTime =
           now.add(Duration(seconds: int.parse(responseData['expiresIn'])));
@@ -315,6 +322,7 @@ class UserModel extends ConnectedProductsModel {
       final String userId = prefs.getString('userId');
       final tokenLifespan = paredExpiryTime.difference(now).inSeconds;
       _authenticatedUser = User(id: userId, email: userEmail, token: token);
+      _userSubject.add(true);
       setAuthTimeout(tokenLifespan);
       notifyListeners();
     }
@@ -323,6 +331,7 @@ class UserModel extends ConnectedProductsModel {
   void logout() async {
     _authenticatedUser = null;
     _authTimer.cancel();
+    _userSubject.add(false);
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.remove('token');
     prefs.remove('userEmail');
@@ -331,7 +340,9 @@ class UserModel extends ConnectedProductsModel {
   }
 
   void setAuthTimeout(int seconds) {
-    _authTimer = Timer(Duration(seconds: seconds), logout);
+    _authTimer = Timer(Duration(seconds: seconds), () {
+      logout();
+    });
   }
 }
 
