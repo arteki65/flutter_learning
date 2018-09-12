@@ -43,12 +43,8 @@ class _MyAppState extends State<MyApp> {
           buttonColor: Colors.deepPurple,
         ),
         routes: {
-          '/': (BuildContext contexy) => ScopedModelDescendant(
-                builder: (BuildContext context, Widget childWidget,
-                    MainModel model) {
-                  return model.user == null ? AuthPage() : ProductsPage(model);
-                },
-              ),
+          '/': (BuildContext contexy) =>
+              _mainModel.user == null ? AuthPage() : ProductsPage(_mainModel),
           '/products': (BuildContext context) => ProductsPage(_mainModel),
           '/admin': (BuildContext context) => ProductsAdminPage(_mainModel),
         },
