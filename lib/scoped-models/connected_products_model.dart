@@ -199,7 +199,7 @@ class ProductsModel extends ConnectedProductsModel {
     });
   }
 
-  void toggleProductFavorite() {
+  void toggleProductFavorite() async {
     final bool isCurrentlyFavourite = selectedProduct.isFavorite;
     final bool newFavouriteStatus = !isCurrentlyFavourite;
     final Product updatedProduct = Product(
@@ -213,8 +213,34 @@ class ProductsModel extends ConnectedProductsModel {
       userId: selectedProduct.userId,
     );
     _products[selectedProductIndex] = updatedProduct;
-    _selProductId = null;
     notifyListeners();
+    http.Response response;
+    if (newFavouriteStatus) {
+      response = await http.put(
+        _productApiUrl +
+            selectedProduct.id +
+            '/wishlistUsers${_authenticatedUser.id}.json?auth=${_authenticatedUser.token}',
+        body: json.encode(true),
+      );
+    } else {
+      response = await http.delete(_productApiUrl +
+          selectedProduct.id +
+          '/wishlistUsers${_authenticatedUser.id}.json?auth=${_authenticatedUser.token}');
+    }
+    if (response.statusCode != 200 && response.statusCode != 201) {
+      final Product updatedProduct = Product(
+        id: selectedProduct.id,
+        title: selectedProduct.title,
+        description: selectedProduct.description,
+        imagePath: selectedProduct.imagePath,
+        price: selectedProduct.price,
+        isFavorite: !newFavouriteStatus,
+        userEmail: selectedProduct.userEmail,
+        userId: selectedProduct.userId,
+      );
+      _products[selectedProductIndex] = updatedProduct;
+      notifyListeners();
+    }
   }
 
   void selectProduct(String productId) {
